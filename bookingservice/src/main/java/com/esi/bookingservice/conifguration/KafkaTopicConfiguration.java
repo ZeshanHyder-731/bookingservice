@@ -25,4 +25,10 @@ public class KafkaTopicConfiguration {
     return TopicBuilder.name("rewardTopic")
     .build();
     }
+
+    @Bean
+    public NewTopic BookingTopicCreation(){
+    return TopicBuilder.name("bookingcompleteTopic")
+    .build();
+    }
 }

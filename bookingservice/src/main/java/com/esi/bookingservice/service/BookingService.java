@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +12,9 @@ import com.esi.bookingservice.dto.BookingDto;
 import com.esi.bookingservice.model.Booking;
 import com.esi.bookingservice.model.BookingStatus;
 import com.esi.bookingservice.repository.OrderRepository;
+
+import com.esi.bookingservice.dto.RewardDto;
+import com.esi.bookingservice.dto.RewardStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,17 +29,32 @@ public class BookingService {
 
     private final KafkaTemplate<String, BookingDto> kafkaTemplate;
 
-    // @KafkaListener(topics = "rewardTopic", groupId = "orderPaymentGroup" )
-    // public void updatePaymentinfo(BookingDto bookingDto){
-    //     Booking order = Booking.builder()
-    //     .id(bookingDto.getId())
-    //     .userId(bookingDto.getUserId())
-    //     .price(bookingDto.getPrice())
-    //     .bookingStatus(bookingDto.getBookingStatus())
-    //     .build();
-    //     orderRepository.save(order);
-    // log.info("Order {} payment status updated", order.getId());
-    // }
+    @KafkaListener(topics = "rewardTopic", groupId = "bookingDoneGroup")
+    public void updateBookingStatusOnReward(RewardDto rewardDto) {
+        log.info("Received reward from rewardTopic: {}", rewardDto);
+
+        if (rewardDto.getRewardStatus() == RewardStatus.REWARD_GIFTED) {
+            // Fetch latest booking by userId
+            orderRepository.findTopByUserIdOrderByIdDesc(rewardDto.getUserId())
+                .ifPresentOrElse(booking -> {
+                    booking.setBookingStatus(BookingStatus.BOOKING_COMPLETED); // or whatever status enum you use
+                    orderRepository.save(booking);
+                    log.info("Booking status updated to BOOKING_COMPLETED for userId: {}", rewardDto.getUserId());
+
+                    BookingDto updatedDto = mapToBookingDto(booking);
+                    updatedDto.setBookingStatus(BookingStatus.BOOKING_COMPLETED);
+                    kafkaTemplate.send("bookingcompleteTopic", updatedDto);
+                    log.info("Published booking completion to bookingcompleteTopic for bookingId: {}", booking.getId());
+                
+                }, () -> {
+                    log.warn("No booking found for userId: {}", rewardDto.getUserId());
+                });
+        } else {
+            log.info("Reward not gifted. Booking status unchanged for userId: {}", rewardDto.getUserId());
+        }
+    }
+
+
 
     public   List<BookingDto> getAllOrders(){
         List<Booking> orders =  new ArrayList<>();

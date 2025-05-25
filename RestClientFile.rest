@@ -10,7 +10,7 @@ content-type: application/json
     "id": 125,
     "userId": 1,
     "productId": 101,   
-    "price": 5000
+    "price": 1500
 }
 
 
