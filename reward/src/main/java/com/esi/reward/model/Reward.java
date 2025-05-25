@@ -1,9 +1,9 @@
 package com.esi.reward.model;
 
-import java.time.LocalDateTime;
-
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -23,7 +23,7 @@ public class Reward {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    private String Message;
-    private LocalDateTime timestamp;
+    @Enumerated(EnumType.STRING)
+    private RewardStatus rewardStatus;
 
 }

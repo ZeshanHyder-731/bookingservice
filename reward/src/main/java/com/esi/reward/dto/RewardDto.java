@@ -1,6 +1,6 @@
 package com.esi.reward.dto;
 
-import java.time.LocalDateTime;
+import com.esi.reward.model.RewardStatus;
 
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -9,6 +9,5 @@ import lombok.Data;
 public class RewardDto {
     @Id
     private Long userId;
-    private String Message;
-    private LocalDateTime timestamp;
+    private RewardStatus rewardStatus;
 }

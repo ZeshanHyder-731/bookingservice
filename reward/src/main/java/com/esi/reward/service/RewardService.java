@@ -1,6 +1,5 @@
 package com.esi.reward.service;
 
-import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -9,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.esi.reward.dto.BookingDto;
 import com.esi.reward.dto.RewardDto;
+import com.esi.reward.model.RewardStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +22,20 @@ public class RewardService {
     private final KafkaTemplate<String, RewardDto> kafkaTemplate;
 
   @KafkaListener(topics = "bookingCreatedTopic", groupId = "rewardGroup")
-public void processBookingCreated(BookingDto bookingDto) {
-    log.info("Received booking from bookingCreatedTopic: {}", bookingDto);
+  public void processBookingCreated(BookingDto bookingDto) {
+      log.info("Received booking from bookingCreatedTopic: {}", bookingDto);
 
-    // Create RewardDto
-    RewardDto rewardDto = new RewardDto();
-    rewardDto.setUserId(bookingDto.getUserId().longValue());
-    rewardDto.setMessage("GEO MAHARASHTRA" + bookingDto.getUserId());
-    rewardDto.setTimestamp(LocalDateTime.now());
+      RewardDto rewardDto = new RewardDto();
+      rewardDto.setUserId(bookingDto.getUserId().longValue());
 
-    // Send reward info to alertTopic
-    kafkaTemplate.send("rewardTopic", rewardDto);
-    log.info("Sent alert to alertTopic: {}", rewardDto);
-}
+      if (bookingDto.getPrice().doubleValue() > 1000) {
+          rewardDto.setRewardStatus(RewardStatus.REWARD_GIFTED);
+      } else {
+          rewardDto.setRewardStatus(RewardStatus.REWARD_FAILED);
+      }
+
+      // Send reward info to alertTopic
+      kafkaTemplate.send("rewardTopic", rewardDto);
+      log.info("Sent alert to alertTopic: {}", rewardDto);
+  }
 }
