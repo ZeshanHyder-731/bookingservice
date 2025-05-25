@@ -1,7 +1,7 @@
-package com.esi.alert.model;
-
+package com.esi.reward.model;
 
 import java.time.LocalDateTime;
+
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,11 +18,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "userbalancetable")
-public class Alert {
+@Table(name = "rewardtable")
+public class Reward {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private Long userId;
     private String Message;
     private LocalDateTime timestamp;

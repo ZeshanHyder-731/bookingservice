@@ -42,8 +42,7 @@ public class AlertService {
 
     alertRepository.save(alertEntity);
 
-        kafkaTemplate.send("alertTopic", alertDto);
-
-        log.info("Sent alert to alertTopic: {}", alertDto);
+    kafkaTemplate.send("alertTopic", alertDto);
+    log.info("Sent alert to alertTopic: {}", alertDto);
     }
 }

@@ -19,4 +19,10 @@ public class KafkaTopicConfiguration {
     return TopicBuilder.name("alertTopic")
     .build();
     }
+
+    @Bean
+    public NewTopic RewardTopicCreation(){
+    return TopicBuilder.name("rewardTopic")
+    .build();
+    }
 }

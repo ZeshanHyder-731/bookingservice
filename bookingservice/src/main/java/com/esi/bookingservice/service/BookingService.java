@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.annotation.KafkaListener;
+// import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -26,17 +26,17 @@ public class BookingService {
 
     private final KafkaTemplate<String, BookingDto> kafkaTemplate;
 
-    @KafkaListener(topics = "alertTopic", groupId = "orderPaymentGroup" )
-    public void updatePaymentinfo(BookingDto bookingDto){
-        Booking order = Booking.builder()
-        .id(bookingDto.getId())
-        .userId(bookingDto.getUserId())
-        .price(bookingDto.getPrice())
-        .bookingStatus(bookingDto.getBookingStatus())
-        .build();
-        orderRepository.save(order);
-    log.info("Order {} payment status updated", order.getId());
-    }
+    // @KafkaListener(topics = "rewardTopic", groupId = "orderPaymentGroup" )
+    // public void updatePaymentinfo(BookingDto bookingDto){
+    //     Booking order = Booking.builder()
+    //     .id(bookingDto.getId())
+    //     .userId(bookingDto.getUserId())
+    //     .price(bookingDto.getPrice())
+    //     .bookingStatus(bookingDto.getBookingStatus())
+    //     .build();
+    //     orderRepository.save(order);
+    // log.info("Order {} payment status updated", order.getId());
+    // }
 
     public   List<BookingDto> getAllOrders(){
         List<Booking> orders =  new ArrayList<>();
